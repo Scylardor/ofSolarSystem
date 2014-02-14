@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_workspace_file>
+	<Workspace title="solarSystem">
+		<Project filename="solarSystemV2.cbp">
+			<Depends filename="../../../libs/openFrameworksCompiled/project/linux64/libopenFrameworks.cbp" />
+		</Project>
+		<Project filename="../../../libs/openFrameworksCompiled/project/linux64/libopenFrameworks.cbp" />
+		<Project filename="../../../examples/3d/3DPrimitivesExample/3DPrimitivesExample.cbp" />
+		<Project filename="../../../examples/3d/advanced3dExample/advanced3dExample.cbp" />
+		<Project filename="../../../examples/graphics/colorsExtended/colorsExtended.cbp" />
+		<Project filename="../../../examples/3d/pointPickerExample/pointPickerExample.cbp" />
+		<Project filename="../../../examples/gl/singleLightExample/singleLightExample.cbp" />
+		<Project filename="../../../examples/gl/multiLightExample/multiLightExample.cbp" />
+		<Project filename="../../../examples/utils/fileOpenSaveDialogExample/fileOpenSaveDialogExample.cbp" />
+		<Project filename="../mySketch/mySketch.cbp" />
+		<Project filename="../../../examples/graphics/blendingExample/blendingExample.cbp" />
+		<Project filename="../../../examples/gui/guiExample/guiExample.cbp" />
+		<Project filename="../../../examples/3d/normalsExample/normalsExample.cbp" />
+		<Project filename="../../../examples/3d/easyCamExample/easyCamExample.cbp" />
+		<Project filename="../../../examples/3d/modelNoiseExample/modelNoiseExample.cbp" />
+		<Project filename="../../../examples/3d/orientationExample/orientationExample.cbp" />
+		<Project filename="../../../examples/gui/guiFromParametersExample/guiFromParametersExample.cbp" />
+		<Project filename="../../../examples/gui/oscParametersReceiver/oscParametersReceiver.cbp" />
+		<Project filename="../../../examples/gui/parameterEdgeCasesExample/parameterEdgeCasesExample.cbp" />
+		<Project filename="../../../examples/3d/quaternionLatLongExample/quaternionLatLongExample.cbp" />
+		<Project filename="../../../examples/addons/3DModelLoaderExample/3DModelLoaderExample.cbp" />
+		<Project filename="../../../examples/math/noise1dExample/noise1dExample.cbp" />
+		<Project filename="../../../examples/math/noise1dOctaveExample/noise1dOctaveExample.cbp" />
+		<Project filename="../../../examples/math/particlesExample/particlesExample.cbp" />
+		<Project filename="../../../examples/math/trigonometryExample/trigonometryExample.cbp" />
+		<Project filename="../../../examples/math/vectorMathExample/vectorMathExample.cbp" />
+		<Project filename="../../../examples/gl/alphaMaskingShaderExample/alphaMaskingShaderExample.cbp" />
+		<Project filename="../../../examples/gl/billboardExample/billboardExample.cbp" />
+		<Project filename="../../../examples/gl/billboardRotationExample/billboardRotationExample.cbp" />
+		<Project filename="../../../examples/gl/fboTrailsExample/fboTrailsExample.cbp" />
+		<Project filename="../../../examples/gl/geometryShaderExample/geometryShaderExample.cbp" />
+		<Project filename="../../../examples/gl/glInfoExample/glInfoExample.cbp" />
+		<Project filename="../../../examples/gl/gpuParticleSystemExample/gpuParticleSystemExample.cbp" />
+		<Project filename="../../../examples/gl/multiTextureShaderExample/multiTextureShaderExample.cbp" />
+		<Project filename="../../../examples/gl/pointsAsTextures/pointsAsTextures.cbp" />
+		<Project filename="../../../examples/gl/shaderExample/shaderExample.cbp" />
+		<Project filename="../../../examples/gl/textureScreengrabExample/textureScreengrabExample.cbp" />
+		<Project filename="../../../examples/gl/vboExample/vboExample.cbp" />
+		<Project filename="../../../examples/gl/textureExample/textureExample.cbp" />
+		<Project filename="../../../examples/graphics/lutFilterExample/lutFilterExample.cbp" />
+		<Project filename="../../../examples/graphics/imageSubsectionExample/imageSubsectionExample.cbp" />
+		<Project filename="../../../examples/graphics/imageSequenceExample/imageSequenceExample.cbp" />
+		<Project filename="../../../examples/graphics/imageCompressionExample/imageCompressionExample.cbp" />
+		<Project filename="../../../examples/graphics/floatingPointImageExample/floatingPointImageExample.cbp" />
+		<Project filename="../../../examples/graphics/fontsExample/fontsExample.cbp" />
+		<Project filename="../../../examples/graphics/fontShapesExample/fontShapesExample.cbp" />
+		<Project filename="../../../examples/graphics/polygonExample/polygonExample.cbp" />
+		<Project filename="../../../examples/graphics/polylineBlobsExample/polylineBlobsExample.cbp" />
+		<Project filename="../../../examples/graphics/simpleColorKey/simpleColorKey.cbp" />
+		<Project filename="../../../examples/sound/audioInputExample/audioInputExample.cbp" />
+		<Project filename="../../../examples/sound/audioOutputExample/audioOutputExample.cbp" />
+		<Project filename="../../../examples/sound/soundPlayerExample/soundPlayerExample.cbp" />
+		<Project filename="../../../examples/sound/soundPlayerFFTExample/soundPlayerFFTExample.cbp" />
+		<Project filename="../../../examples/utils/sortingExample/sortingExample.cbp" />
+		<Project filename="../../../examples/utils/regularExpressionExample/regularExpressionExample.cbp" />
+		<Project filename="../../../examples/utils/threadExample/threadExample.cbp" />
+		<Project filename="../../../examples/utils/windowExample/windowExample.cbp" />
+		<Project filename="../../../examples/utils/conversionExample/conversionExample.cbp" />
+		<Project filename="../../../examples/utils/dragDropExample/dragDropExample.cbp" />
+		<Project filename="../solarSystemV1/solarSystem.cbp" />
+	</Workspace>
+</CodeBlocks_workspace_file>
