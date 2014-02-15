@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxAssimpModelLoader.h"
 
 class testApp : public ofBaseApp{
 

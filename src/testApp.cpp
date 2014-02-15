@@ -161,15 +161,31 @@ void testApp::setup()
 
     borgImg.loadImage("Borg.jpg");
     player.loadSound("WeAreTheBorg.wav");
-   // vplayer.loadMovie("tng2.mp4");
-   // vplayer.play();
+    enterprise.loadModel("enterprise/1701D3DS.3DS");
+    enterprise.setScale(0.01, 0.01, 0.01);
+
     bDrawBorgs = false;
 }
 
 //--------------------------------------------------------------
 void testApp::update()
 {
-    vplayer.update();
+    if (vplayer.isPlaying()) {
+        ofPoint epos = enterprise.getPosition();
+
+        vplayer.update();
+        if (vplayer.getPosition() < 0.4) {
+            enterprise.setPosition(epos[0], epos[1] + 0.5, epos[2]);
+        } else if (vplayer.getPosition() < 0.85) {
+            enterprise.setPosition(epos[0], epos[1], epos[2] + 0.2);
+        } else {
+            enterprise.setPosition(epos[0], epos[1], epos[2]*1.5);
+        }
+        if (vplayer.getIsMovieDone() == true) {
+            vplayer.close();
+        }
+    }
+
     if (bDrawBorgs) {
         // number of borgs out of the soalr system
         unsigned borgsOut = 0;
@@ -204,6 +220,21 @@ void testApp::draw()
         if (bDrawBorgs) {
             drawBorgFleet();
         }
+        if (vplayer.isPlaying() && camNbr == 0) {
+            ofPoint e_pos = enterprise.getPosition();
+
+            if (vplayer.getPosition() < 0.4) {
+                cams[camNbr].setPosition(ofVec3f(e_pos[0]+5, e_pos[1]+8, e_pos[2]+5));
+            } else if (vplayer.getPosition() > 0.4 && vplayer.getPosition() < 0.6) {
+                cams[camNbr].setPosition(ofVec3f(e_pos[0]+10, e_pos[1]+10, e_pos[2]));
+            }
+            if (vplayer.getPosition() < 0.8) {
+                cams[camNbr].lookAt(ofVec3f(e_pos[0], e_pos[1], e_pos[2]));
+            }
+            enterprise.setRotation(0, 180, 1.0, 0.0, 0.0);
+            enterprise.setRotation(1, 180, 0.0, 1.0, 0.0);
+            enterprise.drawFaces();
+        }
         pointLight.disable();
         ofDisableLighting();
         cams[camNbr].end();
@@ -229,6 +260,10 @@ void testApp::draw()
     ofPopStyle();
 
     manageDialog();
+
+    if (vplayer.isPlaying()) {
+        vplayer.draw(ofGetWidth()*2/3, ofGetHeight()*2/3, ofGetWidth()/3, ofGetHeight()/3);
+    }
 }
 
 //--------------------------------------------------------------
@@ -904,7 +939,6 @@ void testApp::scalingText(int code)
         objects[MOON]->setRadius(0.374);
         objects[MOON]->object().setPosition(ofVec3f(3.0, 0, 0));
         stars.setRadius(4000);
-        // 214,833904461
         break;
     case OF_KEY_LEFT:
         mousePickedPlanet--;
@@ -940,7 +974,9 @@ void testApp::effectsText(int code)
     {
     case -1:
         dialog << "SPECIAL EFFECTS" << endl;
-        dialog << "(B): Call the Borgs" << endl;
+        dialog << "(B): The Borg Fleet" << endl;
+        dialog << "(E): The Enterprise" << endl;
+        dialog << "(TAB): Main menu" << endl;
         break;
     case 'b':
         {
@@ -956,6 +992,13 @@ void testApp::effectsText(int code)
             player.play();
             break;
         }
+    case 'e':
+        if (vplayer.isPlaying() == false) {
+            enterprise.setPosition(objects[EARTH]->position()[0], objects[EARTH]->position()[1], objects[EARTH]->position()[2]);
+            vplayer.loadMovie("engage.mp4");
+            vplayer.play();
+        }
+        break;
     case OF_KEY_TAB:
         resetDialog(&testApp::defaultText);
         break;
