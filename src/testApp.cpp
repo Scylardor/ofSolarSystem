@@ -159,68 +159,30 @@ void testApp::setup()
     }
 
 
-    long x = -2000;
-    for (unsigned i = 0; i < 10; i++) {
-        long y = ofRandom(500, 1000);
-        long z = ofRandom(-4000, -4500);
-
-        borgFleet[i].setPosition(x, y, z);
-        x += 400;
-    }
     borgImg.loadImage("Borg.jpg");
-
+    player.loadSound("WeAreTheBorg.wav");
+   // vplayer.loadMovie("tng2.mp4");
+   // vplayer.play();
+    bDrawBorgs = false;
 }
 
 //--------------------------------------------------------------
 void testApp::update()
 {
-    for (unsigned i = 0; i < 10; i++) {
-        borgFleet[i].setPosition(borgFleet[i].getPosition()[0], borgFleet[i].getPosition()[1], borgFleet[i].getPosition()[2] + 5);
-    }
+    vplayer.update();
+    if (bDrawBorgs) {
+        // number of borgs out of the soalr system
+        unsigned borgsOut = 0;
 
-}
-
-void testApp::drawSaturnRing()
-{
-    ofEnableAlphaBlending();
-
-    unsigned ringsNumber = 100;
-    float multRad = 1.1;
-
-
-    for (unsigned ring = 0; ring < ringsNumber; ring++)
-    {
-        ofMesh mesh;
-        float cx = 0, cy = 0, zx = 0;
-        int max = 50;
-        float r = (objects[SATURN]->radius()*multRad);
-
-        ofPushMatrix();
-        multRad += 0.005;
-      //  cout << multRad << endl;
-        mesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
-        for(int ii = 0; ii < max; ii++)
-        {
-            float step = 2*PI/max; // step size around circle
-            float theta = ofMap(ii, 0, max-1, 0, 2*PI); //map i as circle divisions to actual radian values around the circle (note we don't go quite all the way around by one step, because it will be the same as where we started, so we'll just index that starting vertex when we make faces)
-            float prevTheta = theta - step; //one step back
-            float nextTheta = theta + step; // one step forward
-
-            float x = r * cosf(theta);//calculate the x component
-            float y = r * sinf(theta);//calculate the y component
-            ofVec3f p(x + cx, y + cy, zx);
-            mesh.addColor(ofColor(247-(ring*2), 235-(ring*2), 168-(ring*2)));
-            mesh.addVertex(p);//output vertex
-            mesh.addTexCoord(ofVec2f((cosf(theta)+1.0)*0.5, (sinf(theta)+1.0)*0.5));
+        for (unsigned i = 0; i < 10; i++) {
+            borgFleet[i].setPosition(borgFleet[i].getPosition()[0], borgFleet[i].getPosition()[1], borgFleet[i].getPosition()[2] + 5);
+            borgsOut += (borgFleet[i].getPosition()[2] > 4000); // if this borg is now out of the system, increment the number of borgs out
         }
-        ofTranslate(objects[SATURN]->position()[0], objects[SATURN]->position()[1], objects[SATURN]->position()[2]);
-        ofRotate(45, 1, 0, 0);
-        mesh.draw();
-        ofPopMatrix();
+        // if all borgs have got out of the system, stop to draw them
+        if (borgsOut == 10) {
+            bDrawBorgs = false;
+        }
     }
-
-
-
 
 }
 
@@ -238,12 +200,9 @@ void testApp::draw()
         ofEnableLighting();
         pointLight.enable(); // mandatory
         drawScene(camNbr);
-        starTex.getTextureReference().bind();
-        stars.mapTexCoordsFromTexture( starTex.getTextureReference() );
-        stars.draw();
-        starTex.getTextureReference().unbind();
-        for (unsigned i = 0; i < 10; i++) {
-            borgFleet[i].draw();
+        drawStars();
+        if (bDrawBorgs) {
+            drawBorgFleet();
         }
         pointLight.disable();
         ofDisableLighting();
@@ -324,6 +283,63 @@ void testApp::windowResized(int w, int h)
 void testApp::gotMessage(ofMessage msg)
 {
 
+}
+
+
+void testApp::drawStars()
+{
+    starTex.getTextureReference().bind();
+    stars.mapTexCoordsFromTexture( starTex.getTextureReference() );
+    stars.draw();
+    starTex.getTextureReference().unbind();
+}
+
+
+void testApp::drawSaturnRing()
+{
+  //  ofEnableAlphaBlending();
+
+    unsigned ringsNumber = 100;
+    float multRad = 1.2;
+
+    for (unsigned ring = 0; ring < ringsNumber; ring++)
+    {
+        ofMesh mesh;
+        float cx = 0, cy = 0, zx = 0;
+        int max = 50;
+        float r = (objects[SATURN]->radius()*multRad);
+
+        ofPushMatrix();
+        multRad += 0.005;
+        mesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
+        for(int ii = 0; ii < max; ii++)
+        {
+            float step = 2*PI/max; // step size around circle
+            float theta = ofMap(ii, 0, max-1, 0, 2*PI); //map i as circle divisions to actual radian values around the circle (note we don't go quite all the way around by one step, because it will be the same as where we started, so we'll just index that starting vertex when we make faces)
+            float prevTheta = theta - step; //one step back
+            float nextTheta = theta + step; // one step forward
+
+            float x = r * cosf(theta);//calculate the x component
+            float y = r * sinf(theta);//calculate the y component
+            ofVec3f p(x + cx, y + cy, zx);
+            mesh.addColor(ofColor(247-(ring*2), 235-(ring*2), 168-(ring*2)));
+            mesh.addVertex(p);//output vertex
+            mesh.addTexCoord(ofVec2f((cosf(theta)+1.0)*0.5, (sinf(theta)+1.0)*0.5));
+        }
+        ofTranslate(objects[SATURN]->position()[0], objects[SATURN]->position()[1], objects[SATURN]->position()[2]);
+        ofRotate(45, 1, 0, 0);
+        mesh.draw();
+        ofPopMatrix();
+    }
+}
+
+void testApp::drawBorgFleet() {
+    for (unsigned i = 0; i < 10; i++) {
+        borgImg.getTextureReference().bind();
+        borgFleet[i].mapTexCoordsFromTexture( borgImg.getTextureReference() );
+        borgFleet[i].draw();
+        borgImg.getTextureReference().unbind();
+    }
 }
 
 //--------------------------------------------------------------
@@ -421,10 +437,7 @@ void testApp::drawScene(unsigned camNbr)
         {
             ofSetColor(ofColor::white);
         }
-//        ofPushMatrix();
-//        ofRotateX(objects[o]->radius());
         objects[o]->object().draw();
-//        ofPopMatrix();
         materials[objects[o]->materialId()].end();
         objects[o]->texture().getTextureReference().unbind();
     }
@@ -490,13 +503,14 @@ void testApp::defaultText(int code)
     {
     case -1:
         dialog << "MAIN MENU" << endl;
-        dialog << "(C): Camera Controls"<< endl;
-        dialog << "(R): Rotation Controls" << endl;
-        dialog << "(S): Scaling Operations" << endl;
-        dialog << "(I) = Insert New Elements" << endl;
-        dialog << "(F): Toggle Fullscreen"<< endl;
+        dialog << "(C): Camera"<< endl;
+        dialog << "(R): Rotations" << endl;
+        dialog << "(S): Scaling" << endl;
+        dialog << "(I): Insert" << endl;
+        dialog << "(E): Effects" << endl;
+        dialog << "(F): Fullscreen"<< endl;
+        dialog << "(O): Draw Orbits"<< endl;
         dialog << "(T): Take Snapshot" << endl;
-        dialog << "(O): Draw Orbits"<<endl;
         dialog << "(H): Hide this text"<<endl;
         dialog << "ESC: Quit";
         break;
@@ -509,21 +523,25 @@ void testApp::defaultText(int code)
     case 's':
         resetDialog(&testApp::scalingText);
         break;
+    case 'e':
+        resetDialog(&testApp::effectsText);
+        break;
     case 'f':
         ofToggleFullscreen();
         break;
-    case 't':
-    {
-        ofFileDialogResult saveFileResult = ofSystemSaveDialog("SolarSystem.png", "Save a screenshot");
 
-        if (saveFileResult.bSuccess)
-        {
-            ofSaveScreen(saveFileResult.filePath);
-        }
-    }
-    break;
     case 'o':
         bDrawOrbits = !bDrawOrbits;
+        break;
+    case 't':
+        {
+            ofFileDialogResult saveFileResult = ofSystemSaveDialog("SolarSystem.png", "Save a screenshot");
+
+            if (saveFileResult.bSuccess)
+            {
+                ofSaveScreen(saveFileResult.filePath);
+            }
+        }
         break;
     case 'h':
         bInfoText = !bInfoText;
@@ -916,6 +934,37 @@ void testApp::scalingText(int code)
 }
 
 
+void testApp::effectsText(int code)
+{
+    switch (code)
+    {
+    case -1:
+        dialog << "SPECIAL EFFECTS" << endl;
+        dialog << "(B): Call the Borgs" << endl;
+        break;
+    case 'b':
+        {
+            long x = -2000;
+            for (unsigned i = 0; i < 10; i++) {
+                long y = ofRandom(500, 1000);
+                long z = ofRandom(-4000, -4500);
+
+                borgFleet[i].setPosition(x, y, z);
+                x += 400;
+            }
+            bDrawBorgs = true;
+            player.play();
+            break;
+        }
+    case OF_KEY_TAB:
+        resetDialog(&testApp::defaultText);
+        break;
+    }
+
+}
+
+
+
 //--------------------------------------------------------------
 void testApp::resetDialog(void (testApp::*newDialogFunc)(int))
 {
@@ -924,6 +973,7 @@ void testApp::resetDialog(void (testApp::*newDialogFunc)(int))
     dialogFunc = newDialogFunc;
     (this->*newDialogFunc)(-1);
 }
+
 
 void testApp::setupViewports()
 {

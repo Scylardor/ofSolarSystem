@@ -7,8 +7,13 @@ class testApp : public ofBaseApp{
 	public:
 		void setup();
 		void update();
+		// Drawing functions
+		//------------------
 		void draw();
 		void drawScene(unsigned camNbr);
+		void drawSaturnRing();
+		void drawStars();
+		void drawBorgFleet();
 
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -19,20 +24,29 @@ class testApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
-        void updateDisplayedText(unsigned code);
+
+		// Dialog functions
+		//------------------
+        void manageDialog();
+        void resetDialog(void (testApp::*newDialogFunc)(int));
         void defaultText(int code);
         void cameraText(int code);
         void changeCamTargetText(int code);
         void rotationText(int code);
         void scalingText(int code);
-        void resetDialog(void (testApp::*newDialogFunc)(int));
+        void effectsText(int code);
+
+        // Camera functions
+        //-----------------
         void setupViewports();
+
+        // Mouse picking functions
+        //-------------------------
         int mousePickPlanet();
         void mousePickCamTarget(int x, int y, int button);
         void mousePickRotationTarget(int x, int y, int button);
         void mousePickScalingTarget(int x, int y, int button);
-        void manageDialog();
-        void drawSaturnRing();
+
 
         // Class of an astronomical object
         class AstrObject {
@@ -122,5 +136,9 @@ class testApp : public ofBaseApp{
         int rotationTarget;
         ofBoxPrimitive borgFleet[10];
         ofImage borgImg;
+        bool bDrawBorgs;
+        ofSoundPlayer player;
+        ofVideoPlayer vplayer;
+        ofxAssimpModelLoader enterprise;
 
 };
