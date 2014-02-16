@@ -88,20 +88,36 @@ void testApp::AstrObject::setOrbitRadius(double p_orbitRadius)
 //--------------------------------------------------------------
 void testApp::setup()
 {
+    ofMaterial sun_mat;
+    ofMaterial planets_mat;
 
-    glEnable(GL_DEPTH_TEST); //enable depth comparisons and update the depth buffer
+    // Defining materials for lighting to work properly
+    sun_mat.setEmissiveColor( ofColor(250.0, 200.0, 0.0) );
+    planets_mat.setSpecularColor(ofColor(0.0, 0.0, 0.0));
+    materials.push_back(sun_mat);
+    materials.push_back(planets_mat);
+    ofBackground(0,0,0); // black background
+    ofEnableDepthTest(); // enable depth test
     ofSetSmoothLighting(true);
     ofSetVerticalSync(true);
     bDrawOrbits = true;
     bInfoText = true;
     bMousePicking = false;
     bFullStop = false;
-    targetCam = 0;
-    rotationTarget = -1;
+    bSaturnRing = false;
+    rotationTarget = -1; // the object targetted by rotation operations, default -1 means "all at once"
+    n_cams = 1; // Number of cameras
+    targetCam = 0; // the cam targetted by camera operations, 0 (Main) by default
+    setupViewports(); // Initializing camera's point of view
+    // At first cameras have no targets
+    for (int i = 0; i < 4; i++)
+    {
+        camTargetIds[i] = -1; // no target
+    }
 
-    sizeFactor = 5.0;
-    // cams[0].setVFlip(true);
 
+    // CREATING THE ASTRONOMICAL OBJECTS
+    // with hard-coded values of name, revolution (angle around axis), radius, texture name
     objects.push_back(new AstrObject("Sun", ofQuaternion(0.01, ofVec3f(0.0, 1.0, 0.0)), 10.9, "sunTexture2.png"));
     objects.push_back(new AstrObject("Mercury", ofQuaternion(0.017, ofVec3f(0.0, 1.0, 0.0)), 0.383, "mercurymap.jpg"));
     objects.push_back(new AstrObject("Venus", ofQuaternion(-0.004, ofVec3f(0.0, 1.0, 0.0)), 0.949, "VenusTexture.jpg"));
@@ -112,16 +128,26 @@ void testApp::setup()
     objects.push_back(new AstrObject("Uranus", ofQuaternion(-1.39, ofVec3f(0.0, 1.0, 0.0)), 4.007, "UranusTexture.jpg"));
     objects.push_back(new AstrObject("Neptune", ofQuaternion(1.49, ofVec3f(0.0, 1.0, 0.0)), 3.883, "NeptuneTexture.jpg"));
     objects.push_back(new AstrObject("Moon", ofQuaternion(0.036, ofVec3f(0.0, 1.0, 0.0)), 0.2, "MoonTexture.jpg"));
+    objects.push_back(new AstrObject("Callisto", ofQuaternion(0.036, ofVec3f(0.0, 1.0, 0.0)), 0.3, "callisto.jpg"));
+    objects.push_back(new AstrObject("Europa", ofQuaternion(0.036, ofVec3f(0.0, 1.0, 0.0)), 0.2, "europa.jpg"));
+    objects.push_back(new AstrObject("Ganymede", ofQuaternion(0.036, ofVec3f(0.0, 1.0, 0.0)), 0.4, "ganymede.jpg"));
+    objects.push_back(new AstrObject("Io", ofQuaternion(0.036, ofVec3f(0.0, 1.0, 0.0)), 0.2, "io.jpg"));
 
+    // Incline a bit the rotations
     objects[MERCURY]->addRotation(ofQuaternion(0.001, ofVec3f(0, 0.0, 1.0)));
     objects[VENUS]->addRotation(ofQuaternion(1.77, ofVec3f(0, 0.0, 1.0)));
     objects[EARTH]->addRotation(ofQuaternion(0.23, ofVec3f(0, 0.0, 1.0)));
+    objects[EARTH]->addRotation(ofQuaternion(0.3, ofVec3f(0, 0.0, 1.0)));
     objects[MARS]->addRotation(ofQuaternion(0.25, ofVec3f(0, 0.0, 1.0)));
     objects[JUPITER]->addRotation(ofQuaternion(0.03, ofVec3f(0, 0.0, 1.0)));
     objects[SATURN]->addRotation(ofQuaternion(0.27, ofVec3f(0, 0.0, 1.0)));
     objects[URANUS]->addRotation(ofQuaternion(0.98, ofVec3f(0, 0.0, 1.0)));
-    objects[EARTH]->addRotation(ofQuaternion(0.3, ofVec3f(0, 0.0, 1.0)));
-
+    objects[CALLISTO]->addRotation(ofQuaternion(0.98, ofVec3f(1.0, 0.0, 0.0)));
+    objects[EUROPA]->addRotation(ofQuaternion(0.98, ofVec3f(0, 1.0, 0.0)));
+    objects[GANYMEDE]->addRotation(ofQuaternion(0.98, ofVec3f(0, 0.0, 1.0)));
+    objects[IO]->addRotation(ofQuaternion(0.98, ofVec3f(0, 1.0, 1.0)));
+    // Define a point of reference for every planet (basically nearly everything revolves around the Sun)
+    // using hard-coded values divisions to simulate different orbiting speeds
     objects[MERCURY]->setParent(objects[SUN], ofVec3f(13.9, 0, 0), objects[MERCURY]->orbitSpeedFactor()/88);
     objects[VENUS]->setParent(objects[SUN], ofVec3f(17.9, 0, 0), objects[VENUS]->orbitSpeedFactor()/225);
     objects[EARTH]->setParent(objects[SUN], ofVec3f(22.0, 0, 0), objects[EARTH]->orbitSpeedFactor()/365);
@@ -130,67 +156,61 @@ void testApp::setup()
     objects[SATURN]->setParent(objects[SUN], ofVec3f(100.0, 0, 0), objects[SATURN]->orbitSpeedFactor()/10759);
     objects[URANUS]->setParent(objects[SUN], ofVec3f(200.0, 0, 0), objects[URANUS]->orbitSpeedFactor()/60190);
     objects[NEPTUNE]->setParent(objects[SUN], ofVec3f(300.0, 0, 0), objects[NEPTUNE]->orbitSpeedFactor()/30799);
-    objects[MOON]->setParent(objects[EARTH], ofVec3f(23.6, 0, 0), objects[MOON]->orbitSpeedFactor()/30799, true);
-
-    stars.setPosition(0, 0, 0);
-    stars.setRadius(4000);
-    starTex.loadImage("starField.png");
-    dialogFunc = &testApp::defaultText;
-    defaultText(-1); // initializes default text
-    buttonPressedFunc = NULL;
-    for (int i = 0; i < 4; i++)
-    {
-        camTargetIds[i] = -1; // no target
-    }
-    ofBackground(0,0,0);
-    n_cams = 1;
-    setupViewports();
-    ofMaterial sun_mat;
-    ofMaterial planets_mat;
-
-    sun_mat.setEmissiveColor( ofColor(250.0, 200.0, 0.0) );
-    planets_mat.setSpecularColor(ofColor(0.0, 0.0, 0.0));
-    materials.push_back(sun_mat);
-    materials.push_back(planets_mat);
+    objects[MOON]->setParent(objects[EARTH], ofVec3f(23.6, 0, 0), objects[MOON]->orbitSpeedFactor()/27.29, true);
+    objects[CALLISTO]->setParent(objects[JUPITER], ofVec3f(77.99, 2, 2), (objects[CALLISTO]->orbitSpeedFactor()/1669), true);
+    objects[EUROPA]->setParent(objects[JUPITER], ofVec3f(75.99, 4, 4), objects[EUROPA]->orbitSpeedFactor()/355, true);
+    objects[GANYMEDE]->setParent(objects[JUPITER], ofVec3f(77.99, -2, 8), objects[GANYMEDE]->orbitSpeedFactor()/715, true);
+    objects[IO]->setParent(objects[JUPITER], ofVec3f(74.99, -4, 10), objects[IO]->orbitSpeedFactor()/177, true);
+    // Say which material to use for the objects
     for (unsigned obj = SUN; obj < objects.size(); obj++)
     {
         objects[obj]->setMaterialId(obj != SUN); // 0 if sun (emissive material), 1 for others
         objects[obj]->object().setResolution(30);
     }
+    // Creating the stars background
+    stars.setPosition(0, 0, 0);
+    stars.setRadius(4000);
+    starTex.loadImage("starField.png");
+    // Initialize user interactions functions
+    dialogFunc = &testApp::defaultText;
+    defaultText(-1);
+    buttonPressedFunc = NULL;
 
-
+    // Initialize special effects to be ready when needed
     borgImg.loadImage("Borg.jpg");
     player.loadSound("WeAreTheBorg.wav");
     enterprise.loadModel("enterprise/1701D3DS.3DS");
     enterprise.setScale(0.01, 0.01, 0.01);
-
     bDrawBorgs = false;
 }
 
 //--------------------------------------------------------------
 void testApp::update()
 {
-    if (vplayer.isPlaying()) {
+    if (vplayer.isPlaying()) { // if user has called Enterprise and the video isn't finished
         ofPoint epos = enterprise.getPosition();
 
-        vplayer.update();
+        vplayer.update(); // show the rest of the video
+        // Update the position of the Enterprise model based on where we are in the video
         if (vplayer.getPosition() < 0.4) {
+            // beginning of video, rising Enterprise in the Y
             enterprise.setPosition(epos[0], epos[1] + 0.5, epos[2]);
         } else if (vplayer.getPosition() < 0.85) {
+            // end : start to make it advance in Z
             enterprise.setPosition(epos[0], epos[1], epos[2] + 0.2);
         } else {
+            // very end : super acceleration to simulate warp drive effect
             enterprise.setPosition(epos[0], epos[1], epos[2]*1.5);
         }
-        if (vplayer.getIsMovieDone() == true) {
+        if (vplayer.getIsMovieDone() == true) { // don't forget to close the frame if it's over
             vplayer.close();
         }
     }
 
-    if (bDrawBorgs) {
-        // number of borgs out of the soalr system
-        unsigned borgsOut = 0;
+    if (bDrawBorgs) { // if the user has called the borgs
+        unsigned borgsOut = 0; // number of borgs out of the solar system
 
-        for (unsigned i = 0; i < 10; i++) {
+        for (unsigned i = 0; i < 10; i++) { // make them advance
             borgFleet[i].setPosition(borgFleet[i].getPosition()[0], borgFleet[i].getPosition()[1], borgFleet[i].getPosition()[2] + 5);
             borgsOut += (borgFleet[i].getPosition()[2] > 4000); // if this borg is now out of the system, increment the number of borgs out
         }
@@ -207,30 +227,41 @@ void testApp::draw()
 {
     for (unsigned camNbr = 0; camNbr < n_cams; camNbr++)
     {
+        // point this camera to its target (if any)
         if (camTargetIds[camNbr] >= SUN)
         {
             cams[camNbr].setTarget(objects[camTargetIds[camNbr]]->position());
         }
         cams[camNbr].begin(viewports[camNbr]);
-    //    drawSaturnRing();
+        if (bSaturnRing) {
+            drawSaturnRing();
+        }
         ofEnableLighting();
         pointLight.enable(); // mandatory
         drawScene(camNbr);
         drawStars();
+        // if Borgs have been called, draw them
         if (bDrawBorgs) {
             drawBorgFleet();
         }
+        // if the Enterprise has been called, a complex camera movement is done
+        // but do it only on the main camera
         if (vplayer.isPlaying() && camNbr == 0) {
             ofPoint e_pos = enterprise.getPosition();
 
             if (vplayer.getPosition() < 0.4) {
+                // beginning of video : the camera is placed above the ship
                 cams[camNbr].setPosition(ofVec3f(e_pos[0]+5, e_pos[1]+8, e_pos[2]+5));
             } else if (vplayer.getPosition() > 0.4 && vplayer.getPosition() < 0.6) {
+                // on the side
                 cams[camNbr].setPosition(ofVec3f(e_pos[0]+10, e_pos[1]+10, e_pos[2]));
             }
             if (vplayer.getPosition() < 0.8) {
+                // stop to follow the ship : just look at it go away
                 cams[camNbr].lookAt(ofVec3f(e_pos[0], e_pos[1], e_pos[2]));
             }
+            // at first the model is spawned upside down : make it rotate properly to obtain the effect we want
+            // and draw it
             enterprise.setRotation(0, 180, 1.0, 0.0, 0.0);
             enterprise.setRotation(1, 180, 0.0, 1.0, 0.0);
             enterprise.drawFaces();
@@ -239,6 +270,7 @@ void testApp::draw()
         ofDisableLighting();
         cams[camNbr].end();
     }
+    // Draw the name of the camera target, if any
     for (unsigned camNbr = 1; camNbr < n_cams; camNbr++)
     {
         if (camTargetIds[camNbr] != -1)
@@ -248,7 +280,7 @@ void testApp::draw()
 
     }
 
-//     draw outlines on views
+    // Draw outline of viewports
     ofPushStyle();
     ofSetLineWidth(2);
     ofNoFill();
@@ -258,9 +290,10 @@ void testApp::draw()
         ofRect(viewports[i]);
     }
     ofPopStyle();
-
+    // Show the dialog
     manageDialog();
-
+    // At last : play the video if Enterprise is here
+    // play it in the right corner of the screen (just like camera 4)
     if (vplayer.isPlaying()) {
         vplayer.draw(ofGetWidth()*2/3, ofGetHeight()*2/3, ofGetWidth()/3, ofGetHeight()/3);
     }
@@ -349,11 +382,7 @@ void testApp::drawSaturnRing()
         mesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
         for(int ii = 0; ii < max; ii++)
         {
-            float step = 2*PI/max; // step size around circle
             float theta = ofMap(ii, 0, max-1, 0, 2*PI); //map i as circle divisions to actual radian values around the circle (note we don't go quite all the way around by one step, because it will be the same as where we started, so we'll just index that starting vertex when we make faces)
-            float prevTheta = theta - step; //one step back
-            float nextTheta = theta + step; // one step forward
-
             float x = r * cosf(theta);//calculate the x component
             float y = r * sinf(theta);//calculate the y component
             ofVec3f p(x + cx, y + cy, zx);
@@ -592,19 +621,10 @@ void testApp::changeCamTargetText(int code)
     case -1:
         buttonPressedFunc = &testApp::mousePickCamTarget;
         dialog << "CHANGING CAMERA TARGETS" << endl;
-        dialog << "(M) = Toggle mouse picking (" << (bMousePicking ? "enabled" : "disabled") << ")" << endl;
-        dialog << "Left click on planet (if mouse picking) or LEFT/RIGHT = Change target" << endl;
-        dialog << "UP/LEFT = Change camera" << endl;
-        dialog << "Current target: " << objects[mousePickedPlanet]->name() << endl;
-        if (camTargetIds[0] >= SUN)   // if there's a target, print its name
-        {
-            dialog << objects[camTargetIds[0]]->name();
-        }
-        else
-        {
-            dialog << "None";
-        }
-        dialog << endl;
+        dialog << "(M): Toggle mouse picking (" << (bMousePicking ? "enabled" : "disabled") << ")" << endl;
+        dialog << "(LEFT/RIGHT) | Left click (mouse picking): Change target" << endl;
+        dialog << "UP/LEFT: Change camera" << endl;
+        // Print the camera we want to change the target of
         dialog << "Current camera: " << targetCam << " ";
         switch (targetCam)
         {
@@ -620,6 +640,17 @@ void testApp::changeCamTargetText(int code)
         case 3:
             dialog << "(Bottom)";
             break;
+        }
+        dialog << endl;
+        dialog << "Current target: ";
+        // if there's a target, print its name
+        if (camTargetIds[targetCam] >= SUN)
+        {
+            dialog << objects[camTargetIds[targetCam]]->name();
+        }
+        else
+        {
+            dialog << "None";
         }
         dialog << endl;
         dialog << "(TAB): Back" << endl;
@@ -667,10 +698,10 @@ void testApp::cameraText(int code)
     {
     case -1:
         dialog << "CAMERA CONTROLS" << endl;
-        dialog << "Left click drag = XY rotation" << endl;
-        dialog << "Left click drag in corners of the screen (without target) = Z rotation (roll)" << endl;
-        dialog << "Left click drag + (m) OR Middle click drag = move over XY axes (truck and boom)" << endl;
-        dialog << "Right click drag = move over Z axis (dolly in and out)" << endl;
+        dialog << "Left click drag: XY rotation" << endl;
+        dialog << "Left click drag in screen corner (without target): Z rotation (roll)" << endl;
+        dialog << "Left click drag + (m) OR Middle click drag: move over XY axes (truck and boom)" << endl;
+        dialog << "Right click drag: move over Z axis (dolly in and out)" << endl;
         dialog << "Double click (without target) = reset camera position" << endl;
         dialog << "(T): Change camera target" << endl;
         dialog << "(LEFT/RIGHT): Remove/Add one camera (4 max)" << endl;
@@ -724,11 +755,11 @@ void testApp::rotationText(int code)
         buttonPressedFunc = &testApp::mousePickRotationTarget;
         dialog << "ROTATIONS CONTROLS" << endl;
         dialog << "(M) = Toggle mouse picking (" << (bMousePicking ? "enabled" : "disabled") << ")" << endl;
-        dialog << "Left click on planet (if mouse picking) or LEFT/RIGHT = Change target" << endl;
-        dialog << "(C) = Toggle orbit/rotation speed change (current: " << (changeOrbit == true ? "Orbit" : "Rotation") << ")" << endl;
-        dialog << "(I/D) = Increase/Decrease the speed" << endl;
-        dialog << "(F) = Toggle full stop" << endl;
-        dialog << "(R) = Re-initialize to default values" << endl;
+        dialog << "(LEFT/RIGHT) or left click (if mouse picking): Change target" << endl;
+        dialog << "(C): Toggle orbit/rotation speed change (current: " << (changeOrbit == true ? "Orbit" : "Rotation") << ")" << endl;
+        dialog << "(I/D): Increase/Decrease the speed" << endl;
+        dialog << "(F): Toggle full stop" << endl;
+        dialog << "(R): Re-initialize to default values" << endl;
         dialog << "Current target: " << (rotationTarget == -1 ? "All" : objects[rotationTarget]->name()) << endl;
         dialog << "(TAB): Back to main menu" << endl;
         break;
@@ -744,11 +775,11 @@ void testApp::rotationText(int code)
         resetDialog(&testApp::rotationText);
         break;
     case 'i':
-        if (changeOrbit == true)
+        if (changeOrbit == true) // let's change orbit speed
         {
-            if (rotationTarget == -1)
+            if (rotationTarget == -1) // no target = apply the change to all objects
             {
-                for (int plnt = SUN; plnt <= MOON; plnt++)
+                for (unsigned plnt = SUN; plnt < objects.size(); plnt++)
                 {
                     objects[plnt]->setOrbitSpeedFactor(objects[plnt]->orbitSpeedFactor() + 1.0);
                 }
@@ -758,11 +789,11 @@ void testApp::rotationText(int code)
                 objects[rotationTarget]->setOrbitSpeedFactor(objects[rotationTarget]->orbitSpeedFactor() + 1.0);
             }
         }
-        else
+        else // let's change rotation speed around itself of the object
         {
-            if (rotationTarget == -1)
+            if (rotationTarget == -1)  // no target = apply the change to all objects
             {
-                for (int plnt = SUN; plnt <= MOON; plnt++)
+                for (unsigned plnt = SUN; plnt < objects.size(); plnt++)
                 {
                     objects[plnt]->setRotationSpeedFactor(objects[plnt]->rotationSpeedFactor() + 0.5);
                 }
@@ -774,41 +805,46 @@ void testApp::rotationText(int code)
         }
         break;
     case 'd':
-        if (changeOrbit == true)
+        if (changeOrbit == true)  // let's change orbit speed
         {
-            if (rotationTarget == -1)
+            if (rotationTarget == -1) // no target = apply the change to all objects
             {
-                for (int plnt = SUN; plnt <= MOON; plnt++)
+                for (unsigned plnt = SUN; plnt < objects.size(); plnt++)
                 {
                     objects[plnt]->setOrbitSpeedFactor(objects[plnt]->orbitSpeedFactor() - 1.0);
+                    // do not allow it to go below zero (choose the max between the value and 0)
                     objects[plnt]->setOrbitSpeedFactor(std::max(objects[plnt]->orbitSpeedFactor(), 0.0));
                 }
             }
             else
             {
                 objects[rotationTarget]->setOrbitSpeedFactor(objects[rotationTarget]->orbitSpeedFactor() - 1.0);
+                // do not allow it to go below zero (choose the max between the value and 0)
                 objects[rotationTarget]->setOrbitSpeedFactor(std::max(objects[rotationTarget]->orbitSpeedFactor(), 0.0));
             }
         }
-        else
+        else  // let's change rotation speed around itself of the object
         {
-            if (rotationTarget == -1)
+            if (rotationTarget == -1) // no target = apply the change to all objects
             {
-                for (int plnt = SUN; plnt <= MOON; plnt++)
+                for (unsigned plnt = SUN; plnt < objects.size(); plnt++)
                 {
                     objects[plnt]->setRotationSpeedFactor(objects[plnt]->rotationSpeedFactor() - 0.5);
+                    // do not allow it to go below zero (choose the max between the value and 0)
                     objects[plnt]->setRotationSpeedFactor(std::max(objects[plnt]->rotationSpeedFactor(), 0.0));
                 }
             }
             else
             {
                 objects[rotationTarget]->setRotationSpeedFactor(objects[rotationTarget]->rotationSpeedFactor() - 0.5);
+                // do not allow it to go below zero (choose the max between the value and 0)
                 objects[rotationTarget]->setRotationSpeedFactor(std::max(objects[rotationTarget]->rotationSpeedFactor(), 0.0));
             }
         }
         break;
     case 'r':
-        for (int plnt = SUN; plnt <= MOON; plnt++)
+        // Reinitialize multiplication factors of all objects
+        for (unsigned plnt = SUN; plnt < objects.size(); plnt++)
         {
             objects[plnt]->setOrbitSpeedFactor(10.0);
             objects[plnt]->setRotationSpeedFactor(1.0);
@@ -856,19 +892,21 @@ void testApp::scalingText(int code)
     case -1:
         buttonPressedFunc = &testApp::mousePickScalingTarget;
         dialog << "SCALING OPERATIONS" << endl;
-        dialog << "(M) = Toggle mouse picking (" << (bMousePicking ? "enabled" : "disabled") << ")" << endl;
-        dialog << "Left click on planet (if mouse picking) or LEFT/RIGHT = Change target" << endl;
-        dialog << "(R) = Change radius of planet" << endl;
-        dialog << "(O) = Change radius of planet's orbit" << endl;
-        dialog << "(I/D) = Increase/Decrease the radius" << endl;
-        dialog << "(S) = Show solar system to scale" << endl;
+        dialog << "(M): Toggle mouse picking (" << (bMousePicking ? "enabled" : "disabled") << ")" << endl;
+        dialog << "(LEFT/RIGHT) | Left click (if mouse picking): Change target" << endl;
         dialog << "Current target: " << (mousePickedPlanet == -1 ? "All" : objects[mousePickedPlanet]->name()) << endl;
+        dialog << "(R): Change planet radius" << endl;
+        dialog << "(O): Change planet's orbit's radius" << endl;
+        dialog << "(I/D): Increase/Decrease the radius" << endl;
+        dialog << "(S): Show solar system to scale" << endl;
         dialog << "(TAB): Back to main menu" << endl;
         break;
     case 'r':
+        // we want to change the planet radius
         orbitRadius = false;
         break;
     case 'o':
+        // we want to change the planet orbit radius
         orbitRadius = true;
         break;
     case 'm':
@@ -876,9 +914,11 @@ void testApp::scalingText(int code)
         resetDialog(&testApp::scalingText);
         break;
     case 'i':
+        // stop scaling objects at Moon included, or the object itself if there is a target
         endScaling = (mousePickedPlanet == -1 ? MOON : mousePickedPlanet);
-        if (orbitRadius)
+        if (orbitRadius) // change the orbit radius
         {
+            // do not scale the sun ...
             startScaling = (mousePickedPlanet == -1 ? MERCURY : mousePickedPlanet);
 
             for (int target = startScaling; target <= endScaling; target++)
@@ -888,7 +928,7 @@ void testApp::scalingText(int code)
                 objects[target]->object().setGlobalPosition(gpos*1.1);
             }
         }
-        else
+        else // change the planet radius
         {
             startScaling = (mousePickedPlanet == -1 ? SUN : mousePickedPlanet);
             for (int target = startScaling; target <= endScaling; target++)
@@ -919,6 +959,10 @@ void testApp::scalingText(int code)
         }
         break;
     case 's':
+        // Puts the solar system to scale using hard coded values.
+        // The positions are determined taking the radius of the parent into account,
+        // which explains why the numbers seem a little funky.
+        // Isn't reversible at the moment.
         objects[EARTH]->setRadius(1.0);
         objects[EARTH]->object().setGlobalPosition(ofVec3f(209, 0, 0));
         objects[SUN]->setRadius(109.0);
@@ -938,6 +982,14 @@ void testApp::scalingText(int code)
         objects[NEPTUNE]->object().setGlobalPosition(ofVec3f(3109, 0, 0));
         objects[MOON]->setRadius(0.374);
         objects[MOON]->object().setPosition(ofVec3f(3.0, 0, 0));
+        objects[CALLISTO]->setRadius(0.377);
+        objects[CALLISTO]->object().setPosition(ofVec3f(15.99, 2, 2));
+        objects[EUROPA]->setRadius(0.245);
+        objects[EUROPA]->object().setPosition(ofVec3f(13.99, 4, 4));
+        objects[GANYMEDE]->setRadius(0.413);
+        objects[GANYMEDE]->object().setPosition(ofVec3f(15.99, -2, 8));
+        objects[IO]->setRadius(0.286);
+        objects[IO]->object().setPosition(ofVec3f(12.99, -2, 8));
         stars.setRadius(4000);
         break;
     case OF_KEY_LEFT:
@@ -976,10 +1028,12 @@ void testApp::effectsText(int code)
         dialog << "SPECIAL EFFECTS" << endl;
         dialog << "(B): The Borg Fleet" << endl;
         dialog << "(E): The Enterprise" << endl;
+        dialog << "(S): Saturn Rings" << endl;
         dialog << "(TAB): Main menu" << endl;
         break;
     case 'b':
         {
+            // Define random spawning points beyond the solar system
             long x = -2000;
             for (unsigned i = 0; i < 10; i++) {
                 long y = ofRandom(500, 1000);
@@ -989,15 +1043,20 @@ void testApp::effectsText(int code)
                 x += 400;
             }
             bDrawBorgs = true;
+            // start the sound of the Borgs
             player.play();
             break;
         }
     case 'e':
+        // start the video only if it isn't already playing
         if (vplayer.isPlaying() == false) {
             enterprise.setPosition(objects[EARTH]->position()[0], objects[EARTH]->position()[1], objects[EARTH]->position()[2]);
             vplayer.loadMovie("engage.mp4");
             vplayer.play();
         }
+        break;
+    case 's':
+        bSaturnRing = !bSaturnRing;
         break;
     case OF_KEY_TAB:
         resetDialog(&testApp::defaultText);
