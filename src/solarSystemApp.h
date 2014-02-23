@@ -123,7 +123,7 @@ typedef enum Astres
     IO
 } Astres;
 
-class testApp : public ofBaseApp{
+class solarSystemApp : public ofBaseApp{
 	public:
 		void setup();
 		void update();
@@ -148,7 +148,7 @@ class testApp : public ofBaseApp{
 		// Dialog functions
 		//------------------
         void manageDialog();
-        void resetDialog(void (testApp::*newDialogFunc)(int));
+        void resetDialog(void (solarSystemApp::*newDialogFunc)(int));
         void defaultText(int code);
         void cameraText(int code);
         void changeCamTargetText(int code);
@@ -182,8 +182,8 @@ class testApp : public ofBaseApp{
         bool bSaturnRing;
         stringstream dialog;
         // Callback functions
-        void (testApp::*dialogFunc)(int);
-        void (testApp::*buttonPressedFunc)(int, int, int);
+        void (solarSystemApp::*dialogFunc)(int);
+        void (solarSystemApp::*buttonPressedFunc)(int, int, int);
         // Camera stuff
         ofEasyCam cams[4];
         int camTargetIds[4];

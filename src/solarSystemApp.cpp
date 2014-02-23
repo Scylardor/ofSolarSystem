@@ -1,4 +1,4 @@
-#include "testApp.h"
+#include "solarSystemApp.h"
 
 //--------------------------------------------------------------
 AstrObject::AstrObject(const string & p_name, const ofQuaternion & p_rot, double p_radius, const string & p_texturePath, unsigned p_orbit, const ofVec3f & p_pos)
@@ -86,7 +86,7 @@ void AstrObject::setOrbitRadius(double p_orbitRadius)
 
 
 //--------------------------------------------------------------
-void testApp::setup()
+void solarSystemApp::setup()
 {
     ofMaterial sun_mat;
     ofMaterial planets_mat;
@@ -172,7 +172,7 @@ void testApp::setup()
     stars.setRadius(2500);
     starTex.loadImage("starField.png");
     // Initialize user interactions functions
-    dialogFunc = &testApp::defaultText;
+    dialogFunc = &solarSystemApp::defaultText;
     defaultText(-1);
     buttonPressedFunc = NULL;
 
@@ -187,7 +187,7 @@ void testApp::setup()
 }
 
 //--------------------------------------------------------------
-void testApp::update()
+void solarSystemApp::update()
 {
     if (vplayer.isPlaying()) { // if user has called Enterprise and the video isn't finished
         ofPoint epos = enterprise.getPosition();
@@ -225,7 +225,7 @@ void testApp::update()
 }
 
 //--------------------------------------------------------------
-void testApp::draw()
+void solarSystemApp::draw()
 {
     for (unsigned camNbr = 0; camNbr < n_cams; camNbr++)
     {
@@ -301,19 +301,19 @@ void testApp::draw()
 }
 
 //--------------------------------------------------------------
-void testApp::keyPressed(int key)
+void solarSystemApp::keyPressed(int key)
 {
     (this->*dialogFunc)(key);
 }
 
 //--------------------------------------------------------------
-void testApp::keyReleased(int key)
+void solarSystemApp::keyReleased(int key)
 {
 
 }
 
 //--------------------------------------------------------------
-void testApp::mouseMoved(int x, int y)
+void solarSystemApp::mouseMoved(int x, int y)
 {
     if (bMousePicking)
     {
@@ -322,13 +322,13 @@ void testApp::mouseMoved(int x, int y)
 }
 
 //--------------------------------------------------------------
-void testApp::mouseDragged(int x, int y, int button)
+void solarSystemApp::mouseDragged(int x, int y, int button)
 {
 
 }
 
 //--------------------------------------------------------------
-void testApp::mousePressed(int x, int y, int button)
+void solarSystemApp::mousePressed(int x, int y, int button)
 {
     if (buttonPressedFunc != NULL)
     {
@@ -337,25 +337,25 @@ void testApp::mousePressed(int x, int y, int button)
 }
 
 //--------------------------------------------------------------
-void testApp::mouseReleased(int x, int y, int button)
+void solarSystemApp::mouseReleased(int x, int y, int button)
 {
 
 }
 
 //--------------------------------------------------------------
-void testApp::windowResized(int w, int h)
+void solarSystemApp::windowResized(int w, int h)
 {
     setupViewports();
 }
 
 //--------------------------------------------------------------
-void testApp::gotMessage(ofMessage msg)
+void solarSystemApp::gotMessage(ofMessage msg)
 {
 
 }
 
 
-void testApp::drawStars()
+void solarSystemApp::drawStars()
 {
     starTex.getTextureReference().bind();
     stars.mapTexCoordsFromTexture( starTex.getTextureReference() );
@@ -364,7 +364,7 @@ void testApp::drawStars()
 }
 
 
-void testApp::drawSaturnRing()
+void solarSystemApp::drawSaturnRing()
 {
   //  ofEnableAlphaBlending();
 
@@ -398,7 +398,7 @@ void testApp::drawSaturnRing()
     }
 }
 
-void testApp::drawBorgFleet() {
+void solarSystemApp::drawBorgFleet() {
     for (unsigned i = 0; i < 10; i++) {
         borgImg.getTextureReference().bind();
         borgFleet[i].mapTexCoordsFromTexture( borgImg.getTextureReference() );
@@ -408,12 +408,12 @@ void testApp::drawBorgFleet() {
 }
 
 //--------------------------------------------------------------
-void testApp::dragEvent(ofDragInfo dragInfo)
+void solarSystemApp::dragEvent(ofDragInfo dragInfo)
 {
 
 }
 
-void testApp::manageDialog()
+void solarSystemApp::manageDialog()
 {
     static int alphaText = 0;
     static int alpha = 0;
@@ -454,7 +454,7 @@ void testApp::manageDialog()
     ofDrawBitmapStringHighlight(dialog.str().c_str(), 20, 20, ofColor(196,196,196, alpha), ofColor(255, 255,255, alphaText));
 }
 
-void testApp::drawScene(unsigned camNbr)
+void solarSystemApp::drawScene(unsigned camNbr)
 {
     // draw orbits, start at MERCURY because no orbit for the SUN
     for (int plnt = MERCURY; plnt <= NEPTUNE && bDrawOrbits; plnt ++)
@@ -510,39 +510,39 @@ void testApp::drawScene(unsigned camNbr)
 
 }
 
-void testApp::mousePickScalingTarget(int x, int y, int button)
+void solarSystemApp::mousePickScalingTarget(int x, int y, int button)
 {
     if (bMousePicking && button == OF_MOUSE_BUTTON_1)
     {
         mousePickedPlanet = mousePickPlanet();
-        resetDialog(&testApp::scalingText);
+        resetDialog(&solarSystemApp::scalingText);
     }
 }
 
-void testApp::mousePickRotationTarget(int x, int y, int button)
+void solarSystemApp::mousePickRotationTarget(int x, int y, int button)
 {
     if (bMousePicking && button == OF_MOUSE_BUTTON_1)
     {
         int mousePickedPlanet = mousePickPlanet();
 
         rotationTarget = mousePickedPlanet;
-        resetDialog(&testApp::rotationText);
+        resetDialog(&solarSystemApp::rotationText);
     }
 }
 
-void testApp::mousePickCamTarget(int x, int y, int button)
+void solarSystemApp::mousePickCamTarget(int x, int y, int button)
 {
     if (bMousePicking && button == OF_MOUSE_BUTTON_1)
     {
         int mousePickedPlanet = mousePickPlanet();
 
         camTargetIds[targetCam] = mousePickedPlanet;
-        resetDialog(&testApp::changeCamTargetText);
+        resetDialog(&solarSystemApp::changeCamTargetText);
     }
 }
 
 
-int testApp::mousePickPlanet()
+int solarSystemApp::mousePickPlanet()
 {
     float nearestDistance = 0.0;
     int nearestIndex = -1;
@@ -562,7 +562,7 @@ int testApp::mousePickPlanet()
     return nearestIndex;
 }
 
-void testApp::defaultText(int code)
+void solarSystemApp::defaultText(int code)
 {
     switch (code)
     {
@@ -571,7 +571,6 @@ void testApp::defaultText(int code)
         dialog << "(C): Camera"<< endl;
         dialog << "(R): Rotations" << endl;
         dialog << "(S): Scaling" << endl;
-        dialog << "(I): Insert" << endl;
         dialog << "(E): Effects" << endl;
         dialog << "(F): Fullscreen"<< endl;
         dialog << "(O): Draw Orbits"<< endl;
@@ -580,16 +579,16 @@ void testApp::defaultText(int code)
         dialog << "ESC: Quit";
         break;
     case 'c':
-        resetDialog(&testApp::cameraText);
+        resetDialog(&solarSystemApp::cameraText);
         break;
     case 'r':
-        resetDialog(&testApp::rotationText);
+        resetDialog(&solarSystemApp::rotationText);
         break;
     case 's':
-        resetDialog(&testApp::scalingText);
+        resetDialog(&solarSystemApp::scalingText);
         break;
     case 'e':
-        resetDialog(&testApp::effectsText);
+        resetDialog(&solarSystemApp::effectsText);
         break;
     case 'f':
         ofToggleFullscreen();
@@ -601,7 +600,8 @@ void testApp::defaultText(int code)
     case 't':
         // CAUTION !! Taking a snapshot during of after the Enterprise has been called makes the application crash
         // for an unknown reason (probably due to OpenGL)
-        {
+        if (!enterprise.hasMeshes()) {
+
             ofFileDialogResult saveFileResult = ofSystemSaveDialog("SolarSystem.png", "Save a screenshot");
 
             if (saveFileResult.bSuccess)
@@ -617,12 +617,12 @@ void testApp::defaultText(int code)
 
 }
 
-void testApp::changeCamTargetText(int code)
+void solarSystemApp::changeCamTargetText(int code)
 {
     switch (code)
     {
     case -1:
-        buttonPressedFunc = &testApp::mousePickCamTarget;
+        buttonPressedFunc = &solarSystemApp::mousePickCamTarget;
         dialog << "CHANGING CAMERA TARGETS" << endl;
         dialog << "(M): Toggle mouse picking (" << (bMousePicking ? "enabled" : "disabled") << ")" << endl;
         dialog << "(LEFT/RIGHT) | Left click (mouse picking): Change target" << endl;
@@ -660,19 +660,19 @@ void testApp::changeCamTargetText(int code)
         break;
     case 'm':
         bMousePicking = !bMousePicking;
-        resetDialog(&testApp::changeCamTargetText);
+        resetDialog(&solarSystemApp::changeCamTargetText);
         break;
     case OF_KEY_RIGHT:
         camTargetIds[targetCam] = camTargetIds[targetCam] == NEPTUNE ? -1 : camTargetIds[targetCam]+1; // if the index goes beyond neptune, make it loop back to no target
-        resetDialog(&testApp::changeCamTargetText);
+        resetDialog(&solarSystemApp::changeCamTargetText);
         break;
     case OF_KEY_LEFT:
         camTargetIds[targetCam] = camTargetIds[targetCam] == -1 ? NEPTUNE : camTargetIds[targetCam]-1; // if the index becomes negative, make it loop back to Neptune
-        resetDialog(&testApp::changeCamTargetText);
+        resetDialog(&solarSystemApp::changeCamTargetText);
         break;
     case OF_KEY_UP:
         targetCam = (targetCam+1) % n_cams;
-        resetDialog(&testApp::changeCamTargetText);
+        resetDialog(&solarSystemApp::changeCamTargetText);
         break;
     case OF_KEY_DOWN:
         if (targetCam == 0)
@@ -683,17 +683,17 @@ void testApp::changeCamTargetText(int code)
         {
             targetCam--;
         }
-        resetDialog(&testApp::changeCamTargetText);
+        resetDialog(&solarSystemApp::changeCamTargetText);
         break;
     case OF_KEY_TAB:
         bMousePicking = false;
         buttonPressedFunc = NULL;
-        resetDialog(&testApp::cameraText);
+        resetDialog(&solarSystemApp::cameraText);
         break;
     }
 }
 
-void testApp::cameraText(int code)
+void solarSystemApp::cameraText(int code)
 {
     static int newCamTarget = MERCURY;
 
@@ -711,7 +711,7 @@ void testApp::cameraText(int code)
         dialog << "(TAB): Return to main text" << endl;
         break;
     case 't':
-        resetDialog(&testApp::changeCamTargetText);
+        resetDialog(&solarSystemApp::changeCamTargetText);
         break;
     case OF_KEY_LEFT:
         n_cams--;
@@ -720,7 +720,7 @@ void testApp::cameraText(int code)
             n_cams = 4;
         }
         setupViewports();
-        resetDialog(&testApp::cameraText);
+        resetDialog(&solarSystemApp::cameraText);
         break;
 
     case OF_KEY_RIGHT:
@@ -738,24 +738,24 @@ void testApp::cameraText(int code)
             n_cams++;
         }
         setupViewports();
-        resetDialog(&testApp::cameraText);
+        resetDialog(&solarSystemApp::cameraText);
         break;
     case OF_KEY_TAB:
-        resetDialog(&testApp::defaultText);
+        resetDialog(&solarSystemApp::defaultText);
         break;
     }
 
 }
 
 
-void testApp::rotationText(int code)
+void solarSystemApp::rotationText(int code)
 {
     static bool changeOrbit = true; // do we want to change the orbit or the rotation ?
 
     switch (code)
     {
     case -1:
-        buttonPressedFunc = &testApp::mousePickRotationTarget;
+        buttonPressedFunc = &solarSystemApp::mousePickRotationTarget;
         dialog << "ROTATIONS CONTROLS" << endl;
         dialog << "(M) = Toggle mouse picking (" << (bMousePicking ? "enabled" : "disabled") << ")" << endl;
         dialog << "(LEFT/RIGHT) or left click (if mouse picking): Change target" << endl;
@@ -768,14 +768,14 @@ void testApp::rotationText(int code)
         break;
     case 'c':
         changeOrbit = !changeOrbit;
-        resetDialog(&testApp::rotationText);
+        resetDialog(&solarSystemApp::rotationText);
         break;
     case 'f':
         bFullStop = !bFullStop;
         break;
     case 'm':
         bMousePicking = !bMousePicking;
-        resetDialog(&testApp::rotationText);
+        resetDialog(&solarSystemApp::rotationText);
         break;
     case 'i':
         if (changeOrbit == true) // let's change orbit speed
@@ -862,7 +862,7 @@ void testApp::rotationText(int code)
         {
             rotationTarget--;
         }
-        resetDialog(&testApp::rotationText);
+        resetDialog(&solarSystemApp::rotationText);
         break;
     case OF_KEY_RIGHT:
         if (rotationTarget == MOON)
@@ -873,18 +873,18 @@ void testApp::rotationText(int code)
         {
             rotationTarget++;
         }
-        resetDialog(&testApp::rotationText);
+        resetDialog(&solarSystemApp::rotationText);
         break;
     case OF_KEY_TAB:
         bMousePicking = false;
         buttonPressedFunc = NULL;
-        resetDialog(&testApp::defaultText);
+        resetDialog(&solarSystemApp::defaultText);
         break;
     }
 }
 
 
-void testApp::scalingText(int code)
+void solarSystemApp::scalingText(int code)
 {
     static bool orbitRadius = true; // do we want to change the orbit's radius or the planet's radius ?
     int startScaling;
@@ -893,7 +893,7 @@ void testApp::scalingText(int code)
     switch (code)
     {
     case -1:
-        buttonPressedFunc = &testApp::mousePickScalingTarget;
+        buttonPressedFunc = &solarSystemApp::mousePickScalingTarget;
         dialog << "SCALING OPERATIONS" << endl;
         dialog << "(M): Toggle mouse picking (" << (bMousePicking ? "enabled" : "disabled") << ")" << endl;
         dialog << "(LEFT/RIGHT) | Left click (if mouse picking): Change target" << endl;
@@ -914,7 +914,7 @@ void testApp::scalingText(int code)
         break;
     case 'm':
         bMousePicking = !bMousePicking;
-        resetDialog(&testApp::scalingText);
+        resetDialog(&solarSystemApp::scalingText);
         break;
     case 'i':
         // stop scaling objects at Moon included, or the object itself if there is a target
@@ -1001,7 +1001,7 @@ void testApp::scalingText(int code)
         {
             mousePickedPlanet = MOON;
         }
-        resetDialog(&testApp::scalingText);
+        resetDialog(&solarSystemApp::scalingText);
         break;
     case OF_KEY_RIGHT:
         if (mousePickedPlanet == MOON)
@@ -1012,31 +1012,30 @@ void testApp::scalingText(int code)
         {
             mousePickedPlanet++;
         }
-        resetDialog(&testApp::scalingText);
+        resetDialog(&solarSystemApp::scalingText);
         break;
     case OF_KEY_TAB:
         buttonPressedFunc = NULL;
         bMousePicking = false;
-        resetDialog(&testApp::defaultText);
+        resetDialog(&solarSystemApp::defaultText);
         break;
     }
 }
 
 
-void testApp::effectsText(int code)
+void solarSystemApp::effectsText(int code)
 {
     switch (code)
     {
     case -1:
         dialog << "SPECIAL EFFECTS" << endl;
         dialog << "(B): The Borg Fleet" << endl;
-        dialog << "(E): The Enterprise" << endl;
+        dialog << "(E): The Enterprise (disables snapshot taking)" << endl;
         dialog << "(S): Saturn Rings" << endl;
         dialog << "(TAB): Main menu" << endl;
         break;
     case 'b':
         {
-            cout << player.isLoaded() << " " << borgImg.isAllocated() << endl;
             if (!player.isLoaded()) {
                 player.loadSound("WeAreTheBorg.wav");
             }
@@ -1062,7 +1061,6 @@ void testApp::effectsText(int code)
     case 'e':
         // start the video only if it isn't already playing
         if (vplayer.isPlaying() == false) {
-            cout << enterprise.hasMeshes() << endl;
             if (!enterprise.hasMeshes()) {
                 // Load the model here to save setup time.
                 // We don't want to load the model twice, hasMeshes returns true if we already loaded it
@@ -1075,13 +1073,15 @@ void testApp::effectsText(int code)
                 // attempt to play only if loading was successful
                 vplayer.play();
             }
+            // If the main camera was targetting something, stop to target it to focus on the Enterprise
+            camTargetIds[0] = -1;
         }
         break;
     case 's':
         bSaturnRing = !bSaturnRing;
         break;
     case OF_KEY_TAB:
-        resetDialog(&testApp::defaultText);
+        resetDialog(&solarSystemApp::defaultText);
         break;
     }
 
@@ -1090,7 +1090,7 @@ void testApp::effectsText(int code)
 
 
 //--------------------------------------------------------------
-void testApp::resetDialog(void (testApp::*newDialogFunc)(int))
+void solarSystemApp::resetDialog(void (solarSystemApp::*newDialogFunc)(int))
 {
     dialog.flush();
     dialog.str("");
@@ -1099,7 +1099,7 @@ void testApp::resetDialog(void (testApp::*newDialogFunc)(int))
 }
 
 
-void testApp::setupViewports()
+void solarSystemApp::setupViewports()
 {
     if (n_cams == 1)
     {
