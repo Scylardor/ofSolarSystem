@@ -1,7 +1,7 @@
 #include "testApp.h"
 
 //--------------------------------------------------------------
-testApp::AstrObject::AstrObject(const string & p_name, const ofQuaternion & p_rot, double p_radius, const string & p_texturePath, unsigned p_orbit, const ofVec3f & p_pos)
+AstrObject::AstrObject(const string & p_name, const ofQuaternion & p_rot, double p_radius, const string & p_texturePath, unsigned p_orbit, const ofVec3f & p_pos)
 {
     m_orbitSpeedFactor = 10.0;
     m_rotationSpeedFactor = 1.0;
@@ -16,46 +16,46 @@ testApp::AstrObject::AstrObject(const string & p_name, const ofQuaternion & p_ro
 
 }
 
-testApp::AstrObject::~AstrObject()
+AstrObject::~AstrObject()
 {
 }
 
-void testApp::AstrObject::setRadius(double p_rad)
+void AstrObject::setRadius(double p_rad)
 {
     m_obj.setRadius(p_rad);
 }
 
-void testApp::AstrObject::setRotations(const vector<ofQuaternion> & p_rots)
+void AstrObject::setRotations(const vector<ofQuaternion> & p_rots)
 {
     m_rotations = p_rots;
 }
 
-void testApp::AstrObject::addRotation(const ofQuaternion & p_rot)
+void AstrObject::addRotation(const ofQuaternion & p_rot)
 {
     m_rotations.push_back(p_rot);
 }
 
-void testApp::AstrObject::setOrbit(double p_orb)
+void AstrObject::setOrbit(double p_orb)
 {
     m_orbit = p_orb;
 }
 
-void testApp::AstrObject::setTexture(const string & p_imgPath)
+void AstrObject::setTexture(const string & p_imgPath)
 {
     m_texture.loadImage(p_imgPath);
 }
 
-void testApp::AstrObject::setPosition(const ofVec3f & p_newPos)
+void AstrObject::setPosition(const ofVec3f & p_newPos)
 {
     m_obj.setPosition(p_newPos);
 }
 
-void testApp::AstrObject::setMaterialId(unsigned p_matId)
+void AstrObject::setMaterialId(unsigned p_matId)
 {
     m_matId = p_matId;
 }
 
-void testApp::AstrObject::setParent(AstrObject * p_parent, const ofVec3f & p_orbitCoords, double p_orbitPeriod, bool p_objParent)
+void AstrObject::setParent(AstrObject * p_parent, const ofVec3f & p_orbitCoords, double p_orbitPeriod, bool p_objParent)
 {
     p_parent->m_sats.push_back(this);
     m_parent = p_parent;
@@ -69,17 +69,17 @@ void testApp::AstrObject::setParent(AstrObject * p_parent, const ofVec3f & p_orb
 }
 
 
-void testApp::AstrObject::setOrbitSpeedFactor(double p_newOSF)
+void AstrObject::setOrbitSpeedFactor(double p_newOSF)
 {
     m_orbitSpeedFactor = p_newOSF;
 }
 
-void testApp::AstrObject::setRotationSpeedFactor(double p_newRSF)
+void AstrObject::setRotationSpeedFactor(double p_newRSF)
 {
     m_rotationSpeedFactor = p_newRSF;
 }
 
-void testApp::AstrObject::setOrbitRadius(double p_orbitRadius)
+void AstrObject::setOrbitRadius(double p_orbitRadius)
 {
     m_orbitRadius = p_orbitRadius;
 }
@@ -103,7 +103,7 @@ void testApp::setup()
     bDrawOrbits = true;
     bInfoText = true;
     bMousePicking = false;
-    bFullStop = false;
+    bFullStop = false; //trolo
     bSaturnRing = false;
     rotationTarget = -1; // the object targetted by rotation operations, default -1 means "all at once"
     n_cams = 1; // Number of cameras
@@ -169,7 +169,7 @@ void testApp::setup()
     }
     // Creating the stars background
     stars.setPosition(0, 0, 0);
-    stars.setRadius(4000);
+    stars.setRadius(2500);
     starTex.loadImage("starField.png");
     // Initialize user interactions functions
     dialogFunc = &testApp::defaultText;
@@ -177,11 +177,13 @@ void testApp::setup()
     buttonPressedFunc = NULL;
 
     // Initialize special effects to be ready when needed
-    borgImg.loadImage("Borg.jpg");
-    player.loadSound("WeAreTheBorg.wav");
-    enterprise.loadModel("enterprise/1701D3DS.3DS");
-    enterprise.setScale(0.01, 0.01, 0.01);
+   // borgImg.loadImage("Borg.jpg");
+   // player.loadSound("WeAreTheBorg.wav");
+ //   enterprise.loadModel("enterprise/1701D3DS.3DS");
+   // enterprise.setScale(0.01, 0.01, 0.01);
     bDrawBorgs = false;
+
+
 }
 
 //--------------------------------------------------------------
@@ -212,7 +214,7 @@ void testApp::update()
 
         for (unsigned i = 0; i < 10; i++) { // make them advance
             borgFleet[i].setPosition(borgFleet[i].getPosition()[0], borgFleet[i].getPosition()[1], borgFleet[i].getPosition()[2] + 5);
-            borgsOut += (borgFleet[i].getPosition()[2] > 4000); // if this borg is now out of the system, increment the number of borgs out
+            borgsOut += (borgFleet[i].getPosition()[2] > stars.getRadius()); // if this borg is now out of the system, increment the number of borgs out
         }
         // if all borgs have got out of the system, stop to draw them
         if (borgsOut == 10) {
@@ -279,7 +281,6 @@ void testApp::draw()
         }
 
     }
-
     // Draw outline of viewports
     ofPushStyle();
     ofSetLineWidth(2);
@@ -598,6 +599,8 @@ void testApp::defaultText(int code)
         bDrawOrbits = !bDrawOrbits;
         break;
     case 't':
+        // CAUTION !! Taking a snapshot during of after the Enterprise has been called makes the application crash
+        // for an unknown reason (probably due to OpenGL)
         {
             ofFileDialogResult saveFileResult = ofSystemSaveDialog("SolarSystem.png", "Save a screenshot");
 
@@ -1033,26 +1036,45 @@ void testApp::effectsText(int code)
         break;
     case 'b':
         {
+            cout << player.isLoaded() << " " << borgImg.isAllocated() << endl;
+            if (!player.isLoaded()) {
+                player.loadSound("WeAreTheBorg.wav");
+            }
+            if (!borgImg.isAllocated()) {
+                borgImg.loadImage("Borg.jpg");
+            }
             // Define random spawning points beyond the solar system
             long x = -2000;
             for (unsigned i = 0; i < 10; i++) {
                 long y = ofRandom(500, 1000);
-                long z = ofRandom(-4000, -4500);
+                long z = ofRandom(-stars.getRadius(), -stars.getRadius()-500);
 
                 borgFleet[i].setPosition(x, y, z);
                 x += 400;
             }
             bDrawBorgs = true;
-            // start the sound of the Borgs
-            player.play();
+            if (player.isLoaded()) {
+                // if sound is correctly loaded, play the Borgs sound
+                player.play();
+            }
             break;
         }
     case 'e':
         // start the video only if it isn't already playing
         if (vplayer.isPlaying() == false) {
+            cout << enterprise.hasMeshes() << endl;
+            if (!enterprise.hasMeshes()) {
+                // Load the model here to save setup time.
+                // We don't want to load the model twice, hasMeshes returns true if we already loaded it
+                enterprise.loadModel("enterprise/1701D3DS.3DS");
+                enterprise.setScale(0.01, 0.01, 0.01);
+            }
             enterprise.setPosition(objects[EARTH]->position()[0], objects[EARTH]->position()[1], objects[EARTH]->position()[2]);
             vplayer.loadMovie("engage.mp4");
-            vplayer.play();
+            if (vplayer.isLoaded()) {
+                // attempt to play only if loading was successful
+                vplayer.play();
+            }
         }
         break;
     case 's':
