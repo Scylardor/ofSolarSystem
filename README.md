@@ -16,7 +16,7 @@ It has some nice features, such as:
   * everything is interactive: you can change scales, rotation, orbit speed and radius of each object
   * special effects like a Star Trek's Borg fleet passing through the solar system, a kind of cutscene using a video of Captain Picard, and real-time geometry drawing Saturn's rings
 
-![Picard](https://github.com/Scylardor/ofSolarSystem/blob/master/bin/data/screen2.jpg?raw=true "Picard screenshot")
+![Picard](https://github.com/Scylardor/ofSolarSystem/blob/master/bin/data/screen2.png?raw=true "Picard screenshot")
 
 How to run it
 -------------
