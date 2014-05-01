@@ -3,6 +3,12 @@ ofSolarSystem
 
 An interactive 3D solar system simulation using OpenFrameworks
 
+![alt text](https://github.com/Scylardor/ofSolarSystem/blob/master/bin/data/screen1.jpg "Main screenshot")
+
+
+Synopsis
+--------
+
 This is a project made to experiment with [OpenFrameworks](http://openframeworks.cc).
 
 It has some nice features, such as:
@@ -10,6 +16,7 @@ It has some nice features, such as:
   * everything is interactive: you can change scales, rotation, orbit speed and radius of each object
   * special effects like a Star Trek's Borg fleet passing through the solar system, a kind of cutscene using a video of Captain Picard, and real-time geometry drawing Saturn's rings
 
+![alt text](https://github.com/Scylardor/ofSolarSystem/blob/master/bin/data/screen2.jpg "Picard screenshot")
 
 How to run it
 -------------
@@ -34,8 +41,9 @@ The USS Enterprise-D 3D model and its textures comes from http://www.trekmeshes.
 
 The "We Are The Borg" sound comes from the movie "Star Trek: First Contact" (1996, Paramount Pictures).
 
-The video used in the Enterprise cutscene is an excerpt of the Star Trek episode "Encounter At Farpoint" (Star Trek: The Next Generation, Season 1, Épisode 1, 1987).
+The video used in the Enterprise cutscene is an excerpt of the Star Trek episode "Encounter At Farpoint" (Star Trek: The Next Generation, Season 1, episode 1, 1987).
 
+![alt text](https://github.com/Scylardor/ofSolarSystem/blob/master/bin/data/borgs.jpg "Borgs screenshot")
 
 Bugs
 ----
