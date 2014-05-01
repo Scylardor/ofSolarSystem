@@ -35,7 +35,6 @@ Most of the celestial objects textures used come from http://planetpixelemporium
 The star field texture comes from http://paulbourke.net/miscellaneous/starfield/ .
 
 The Borg Cube texture comes from http://ribot02.deviantart.com/art/borg-tech-texture-311444974 .
-\section{Modèle 3D}
 
 The USS Enterprise-D 3D model and its textures comes from http://www.trekmeshes.ch/meshes/meshesdetails.php?Name=1701D. The original author is Chris Setterington and the 3DS Max adaptation used by the application has been made by Erik Timmermans.
 
