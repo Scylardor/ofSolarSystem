@@ -23,9 +23,9 @@ How to run it
 
 This is an OpenFrameworks project.
 
-If you have an OpenFrameworks distribution installed on your computer, just download the repository and drop the bin/ and src/ folders into an OpenFrameworks project using the ofxAssimpModelLoader add-on, compile it with your IDE of choice, and it should run.
+If you have an OpenFrameworks distribution installed on your computer, just clone the repository in your $(OF_ROOT)/apps/myApps/ folder. It has been compiled using Code::Blocks, so opening the C::B workspace file and build it should be fine, but you also should be able to build it using any IDE. If it really doesn't work, you can generate a new OpenFrameworks project using the ofxAssimpModelLoader add-on, and drop the bin/ and src/ folders of the Git repository into it.
 
-This project has been successfully tested and ran on both Linux (Ubuntu 13.04 x86_64) and Windows (Seven x86_64) distributions of OpenFrameworks 0.8.0.
+This project has been successfully tested and ran on Ubuntu (13.04/14.04 x86_64) and Windows 7 (x86_64) distributions of OpenFrameworks 0.8.0.
 
 Credits
 -------
