@@ -14,9 +14,11 @@ This is a project made to experiment with [OpenFrameworks](http://openframeworks
 It has some nice features, such as:
   * a multi-viewports mode, allowing up to four cameras at the same time on the screen
   * everything is interactive: you can change scales, rotation, orbit speed and radius of each object
-  * special effects like a Star Trek's Borg fleet passing through the solar system, a kind of cutscene using a video of Captain Picard, and real-time geometry drawing Saturn's rings
+  * special effects like a Star Trek's Borg fleet passing through the solar system, a kind of cutscene using a video of Captain Picard, and real-time geometry drawing Saturn's rings.
 
 ![Picard](https://github.com/Scylardor/ofSolarSystem/blob/master/bin/data/screen2.png?raw=true "Picard screenshot")
+
+*Note*: To be able to play the Star Trek video, you need to install a codec to play MP4s. openFrameworks team advises to install the K-Lite Codec Pack, which works well.
 
 How to run it
 -------------
@@ -25,7 +27,7 @@ This is an OpenFrameworks project.
 
 If you have an OpenFrameworks distribution installed on your computer, just clone the repository in your $(OF_ROOT)/apps/myApps/ folder. It has been compiled using Code::Blocks, so opening the C::B workspace file and build it should be fine, but you also should be able to build it using any IDE. If it really doesn't work, you can generate a new OpenFrameworks project using the ofxAssimpModelLoader add-on, and drop the bin/ and src/ folders of the Git repository into it.
 
-This project has been successfully tested and ran on Ubuntu (13.04/14.04 x86_64) and Windows 7 (x86_64) distributions of OpenFrameworks 0.8.0.
+This project has been successfully tested and ran on Ubuntu (13.04/14.04 x86_64), Windows 7 (x86_64) distributions of OpenFrameworks 0.8.0, and openFrameworks 0.9.8 on Windows 10.
 
 Credits
 -------
@@ -48,7 +50,7 @@ Bugs
 ----
 
 Some bugs are currently known :
-  * Due to a known Assimp library problem, the Enterprise 3D model can't be loaded on Windows platforms. Consequently, this feature doesn't work on Windows.
+  * Due to a change in the video player API, my code doesn't seem to make good use of it anymore, and the Star Trek video is very buggy, doesn't always start, and when it does, keeps playing forever. This is a known bug I haven't time to investigate.
   * For an unknown reason, taking a snapshot while or after the Enterprise video has been played makes the application crash (potentially an OpenFrameworks bug). That's why triggering the Enterprise cutscene disables snapshots.
 
 
